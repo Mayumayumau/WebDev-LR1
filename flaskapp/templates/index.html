@@ -1,11 +1,11 @@
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Pic Collage</title>
-</head>
-<body>
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} Pic Collage {% endblock %}
+{% block content %}
 <h1>Pic Collage</h1>
 <h2>Create a collage from your favorite pictures</h2>
+{{ wtf.quick_form(template_form, method='post', enctype="multipart/form-data") }}
 
-</body>
-</html>
+{% endblock %}
+
