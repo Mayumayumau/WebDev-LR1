@@ -7,8 +7,6 @@ from flask_wtf.file import FileRequired, FileAllowed
 from flask_bootstrap import Bootstrap
 import os
 
-
-
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 # TODO: make a random key
@@ -16,17 +14,22 @@ bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = 'some_key'
 
 # TODO: CAPTCHA
+app.config['RECAPTCHA_USE_SSL'] = False
+app.config['RECAPTCHA_PUBLIC_KEY'] = '6LeJAGYfAAAAAPdtZRMU9-LdJMLjRIbqnfQosMIr'
+app.config['RECAPTCHA_PRIVATE_KEY'] = '6LeJAGYfAAAAAFmKVIXr6t3nA0oe48Fi5yOMltHb'
+app.config['RECAPTCHA_OPTIONS'] = {'theme': 'white'}
 
-# photos = UploadSet('photos', IMAGES)
 
 class CollageForm(FlaskForm):
     img1 = FileField("Upload image 1", validators=[FileRequired(),
-                                                         FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
+                                                   FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
     img2 = FileField("Upload image 2", validators=[FileRequired(),
-                                                         FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
+                                                   FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
     shape = SelectField("Collage shape", choices=[("Vertical", "Vertical"), ("Horizontal", "Horizontal")],
                         validators=[DataRequired()])
+    recaptcha = RecaptchaField()
     submit = SubmitField("Submit", validators=[DataRequired()])
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -39,7 +42,4 @@ def index():
         form.img1.data.save(filename1)
         form.img2.data.save(filename2)
 
-
     return render_template("index.html", template_form=form, image1=filename1, image2=filename2)
-
-
