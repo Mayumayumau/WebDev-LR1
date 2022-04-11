@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm, RecaptchaField
 from werkzeug.utils import secure_filename
 from wtforms import FileField, SubmitField, SelectField
@@ -13,7 +13,7 @@ bootstrap = Bootstrap(app)
 
 app.config['SECRET_KEY'] = 'some_key'
 
-# TODO: CAPTCHA
+# CAPTCHA
 app.config['RECAPTCHA_USE_SSL'] = False
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6LeJAGYfAAAAAPdtZRMU9-LdJMLjRIbqnfQosMIr'
 app.config['RECAPTCHA_PRIVATE_KEY'] = '6LeJAGYfAAAAAFmKVIXr6t3nA0oe48Fi5yOMltHb'
@@ -41,5 +41,10 @@ def index():
         filename2 = os.path.join('static', secure_filename(form.img2.data.filename))
         form.img1.data.save(filename1)
         form.img2.data.save(filename2)
+        return redirect(url_for("result", image1=filename1, image2=filename2))
 
     return render_template("index.html", template_form=form, image1=filename1, image2=filename2)
+
+@app.route("/result", methods=["GET"])
+def result():
+    return render_template("result.html", image1=request.args.get('image1'), image2=request.args.get('image2'))
