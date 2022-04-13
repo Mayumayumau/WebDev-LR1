@@ -38,17 +38,17 @@ class CollageForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 def index():
     # remove downloaded files from the previous session
-    files = os.listdir("static")
+    files = os.listdir("./static")
     if len(files) > 0:
         for file_path in files:
-            os.remove('static/' + file_path)
+            os.remove('./static/' + file_path)
     form = CollageForm()
     filename1 = None
     filename2 = None
     collage_shape = None
     if form.validate_on_submit():
-        filename1 = os.path.join('static', secure_filename(form.img1.data.filename))
-        filename2 = os.path.join('static', secure_filename(form.img2.data.filename))
+        filename1 = os.path.join('./static', secure_filename(form.img1.data.filename))
+        filename2 = os.path.join('./static', secure_filename(form.img2.data.filename))
         collage_shape = form.shape.data
         form.img1.data.save(filename1)
         form.img2.data.save(filename2)
@@ -87,7 +87,7 @@ def result():
     # TODO: combine pictures
     shape = request.args.get('shape')
     collage = combine_pics(image1, image2, shape)
-    collage.save('static/collage.jpg')
+    collage.save('./static/collage.jpg')
     np_image1 = np.array(image1)
     np_image2 = np.array(image2)
     np_collage = np.array(collage)
@@ -106,22 +106,20 @@ def result():
     viewer1.plot(rgb1[0], color='r')
     viewer1.plot(rgb1[1], color='g')
     viewer1.plot(rgb1[2], color='b')
-    fig1.savefig('static/hist1.png')
+    fig1.savefig('./static/hist1.png')
     fig2 = plt.figure(figsize=(4, 4))
     viewer2 = fig2.add_subplot(1, 1, 1)
     viewer2.plot(rgb2[0], color='r')
     viewer2.plot(rgb2[1], color='g')
     viewer2.plot(rgb2[2], color='b')
-    fig2.savefig('static/hist2')
+    fig2.savefig('./static/hist2')
     fig3 = plt.figure(figsize=(4, 4))
     viewer3 = fig3.add_subplot(1, 1, 1)
     viewer3.plot(rgb_collage[0], color='r')
     viewer3.plot(rgb_collage[1], color='g')
     viewer3.plot(rgb_collage[2], color='b')
-    fig3.savefig('static/hist3')
+    fig3.savefig('./static/hist3')
     return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage)
 
 # TODO: make pretty
-# TODO: server
-# TODO: appveyor
 # TODO: heroku
