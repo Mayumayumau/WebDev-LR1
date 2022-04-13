@@ -36,6 +36,11 @@ class CollageForm(FlaskForm):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    # remove downloaded files from the previous session
+    files = os.listdir("static")
+    if len(files) > 0:
+        for file_path in files:
+            os.remove('static/' + file_path)
     form = CollageForm()
     filename1 = None
     filename2 = None
@@ -114,3 +119,8 @@ def result():
     viewer3.plot(rgb_collage[2], color='b')
     fig3.savefig('static/hist3')
     return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage)
+
+# TODO: make pretty
+# TODO: server
+# TODO: appveyor
+# TODO: heroku
