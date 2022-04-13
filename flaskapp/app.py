@@ -39,46 +39,78 @@ def index():
     form = CollageForm()
     filename1 = None
     filename2 = None
+    collage_shape = None
     if form.validate_on_submit():
         filename1 = os.path.join('static', secure_filename(form.img1.data.filename))
         filename2 = os.path.join('static', secure_filename(form.img2.data.filename))
         collage_shape = form.shape.data
         form.img1.data.save(filename1)
         form.img2.data.save(filename2)
-        return redirect(url_for("result", image1=filename1, image2=filename2))
+        return redirect(url_for("result", image1=filename1, image2=filename2, shape=collage_shape))
 
     return render_template("index.html", template_form=form, image1=filename1, image2=filename2)
 
 
+def combine_pics(img1, img2, shape):
+    img_combined = None
+    if shape == 'Vertical':
+        if img1.width < img2.width:
+            img2.thumbnail((img1.width, img2.height))
+        elif img1.width > img2.width:
+            img1.thumbnail((img2.width, img1.height))
+        img_combined = Image.new('RGB', (img1.width, img1.height + img2.height))
+        img_combined.paste(img1, (0, 0))
+        img_combined.paste(img2, (0, img1.height))
+    else:
+        if img1.height < img2.height:
+            img2.thumbnail((img2.width, img1.height))
+        elif img1.height > img2.height:
+            img1.thumbnail((img1.width, img2.height))
+        img_combined = Image.new('RGB', (img1.width + img2.width, img1.height))
+        img_combined.paste(img1, (0, 0))
+        img_combined.paste(img2, (img1.width, 0))
+    return img_combined
+
+
 @app.route("/result", methods=["GET"])
 def result():
-    image1 = request.args.get('image1')
-    image2 = request.args.get('image2')
-    np_image1 = np.array(Image.open(image1))
-    np_image2 = np.array(Image.open(image2))
+    image1_path = request.args.get('image1')
+    image2_path = request.args.get('image2')
+    image1 = Image.open(image1_path)
+    image2 = Image.open(image2_path)
+    # TODO: combine pictures
+    shape = request.args.get('shape')
+    collage = combine_pics(image1, image2, shape)
+    collage.save('static/collage.jpg')
+    np_image1 = np.array(image1)
+    np_image2 = np.array(image2)
+    np_collage = np.array(collage)
     image1_transposed = np_image1.transpose()
     image2_transposed = np_image2.transpose()
+    collage_transposed = np_collage.transpose()
     rgb1 = [[]] * 3
     rgb2 = [[]] * 3
+    rgb_collage = [[]] * 3
     for i in range(3):
         rgb1[i], bin1 = np.histogram(image1_transposed[i], bins=256)
         rgb2[i], bin1 = np.histogram(image2_transposed[i], bins=256)
-    fig1 = plt.figure(figsize=(4,4))
-    viewer1 = fig1.add_subplot(1,1,1)
+        rgb_collage[i], bin1 = np.histogram(collage_transposed[i], bins=256)
+    fig1 = plt.figure(figsize=(4, 4))
+    viewer1 = fig1.add_subplot(1, 1, 1)
     viewer1.plot(rgb1[0], color='r')
     viewer1.plot(rgb1[1], color='g')
     viewer1.plot(rgb1[2], color='b')
-    fig1.show()
     fig1.savefig('static/hist1.png')
-    fig2 = plt.figure(figsize=(4,4))
+    fig2 = plt.figure(figsize=(4, 4))
     viewer2 = fig2.add_subplot(1, 1, 1)
     viewer2.plot(rgb2[0], color='r')
     viewer2.plot(rgb2[1], color='g')
     viewer2.plot(rgb2[2], color='b')
-    fig2.show()
     fig2.savefig('static/hist2')
-
-    # TODO: combine pictures
-
-    # TODO: show chart for the collage
-    return render_template("result.html", image1=image1, image2=image2)
+    fig3 = plt.figure(figsize=(4, 4))
+    viewer3 = fig3.add_subplot(1, 1, 1)
+    viewer3.plot(rgb_collage[0], color='r')
+    viewer3.plot(rgb_collage[1], color='g')
+    viewer3.plot(rgb_collage[2], color='b')
+    fig3.savefig('static/hist3')
+    return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage)
