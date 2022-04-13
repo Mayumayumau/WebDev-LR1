@@ -1,0 +1,8 @@
+image: Ubuntu
+stack: python 3
+install:
+ - chmod +x ./flaskapp/st.sh
+ - pip3 install -r requirements.txt
+build_script:
+ - cd flaskapp
+ - ./st.sh

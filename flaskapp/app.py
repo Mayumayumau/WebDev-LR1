@@ -9,6 +9,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+import random
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
