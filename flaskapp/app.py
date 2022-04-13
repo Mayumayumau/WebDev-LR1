@@ -41,7 +41,8 @@ def index():
     files = os.listdir("./static")
     if len(files) > 0:
         for file_path in files:
-            os.remove('./static/' + file_path)
+            if file_path != '.gitkeep':
+                os.remove('./static/' + file_path)
     form = CollageForm()
     filename1 = None
     filename2 = None
