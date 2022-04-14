@@ -9,14 +9,13 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import random
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 # make a random key
 app.config['SECRET_KEY'] = os.urandom(12).hex()
 
-# CAPTCHA
+# Ключи для капчи
 app.config['RECAPTCHA_USE_SSL'] = False
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6LeJAGYfAAAAAPdtZRMU9-LdJMLjRIbqnfQosMIr'
 app.config['RECAPTCHA_PRIVATE_KEY'] = '6LeJAGYfAAAAAFmKVIXr6t3nA0oe48Fi5yOMltHb'
@@ -33,15 +32,16 @@ class CollageForm(FlaskForm):
     recaptcha = RecaptchaField()
     submit = SubmitField("Submit", validators=[DataRequired()])
 
-
+# главная страница приложения
 @app.route("/", methods=["GET", "POST"])
 def index():
-    # remove downloaded files from the previous session
+    # очищаем папку static от файлов, загруженных в прошлой сессии
     files = os.listdir("./static")
-    if len(files) > 0:
+    if len(files) > 1:
         for file_path in files:
-            if file_path != '.gitkeep':
+            if file_path != 'style.css':
                 os.remove('./static/' + file_path)
+    #  Создаем форму. В случае успешной валидации, переходим на страницу с результатом
     form = CollageForm()
     filename1 = None
     filename2 = None
@@ -59,11 +59,13 @@ def index():
 
 def combine_pics(img1, img2, shape):
     img_combined = None
+    # приводим изображения к одинаковой высоте или ширине в зависимости от формы коллажа
     if shape == 'Vertical':
         if img1.width < img2.width:
             img2.thumbnail((img1.width, img2.height))
         elif img1.width > img2.width:
             img1.thumbnail((img2.width, img1.height))
+        # создаем фон для коллажа и копируем на него оба изображения
         img_combined = Image.new('RGB', (img1.width, img1.height + img2.height))
         img_combined.paste(img1, (0, 0))
         img_combined.paste(img2, (0, img1.height))
@@ -80,20 +82,25 @@ def combine_pics(img1, img2, shape):
 
 @app.route("/result", methods=["GET"])
 def result():
+    # получаем назвния файлов и нужную форму коллажа из параметров функции redirect
     image1_path = request.args.get('image1')
     image2_path = request.args.get('image2')
+    shape = request.args.get('shape')
+    # открываем изображения
     image1 = Image.open(image1_path)
     image2 = Image.open(image2_path)
-    # TODO: combine pictures
-    shape = request.args.get('shape')
+    # комбинируем изображения и сохраняем файл
     collage = combine_pics(image1, image2, shape)
     collage.save('./static/collage.jpg')
+    # трансформируем все три изображения в numpy массивы
     np_image1 = np.array(image1)
     np_image2 = np.array(image2)
     np_collage = np.array(collage)
+    # транспонируем массивы
     image1_transposed = np_image1.transpose()
     image2_transposed = np_image2.transpose()
     collage_transposed = np_collage.transpose()
+    # создаем массивы и записываем в них количество значений для каждой величины R, G  и B
     rgb1 = [[]] * 3
     rgb2 = [[]] * 3
     rgb_collage = [[]] * 3
@@ -101,6 +108,7 @@ def result():
         rgb1[i], bin1 = np.histogram(image1_transposed[i], bins=256)
         rgb2[i], bin1 = np.histogram(image2_transposed[i], bins=256)
         rgb_collage[i], bin1 = np.histogram(collage_transposed[i], bins=256)
+    # создаем графики по получившимся данным и сохраняем их в виде изображений
     fig1 = plt.figure(figsize=(4, 4))
     viewer1 = fig1.add_subplot(1, 1, 1)
     viewer1.plot(rgb1[0], color='r')
@@ -121,4 +129,3 @@ def result():
     fig3.savefig('./static/hist3')
     return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage)
 
-# TODO: make pretty

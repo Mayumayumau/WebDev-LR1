@@ -1,0 +1,55 @@
+h1, h2 {
+    text-align:center;
+    font-family: monospace;
+    margin-bottom: 40px;
+}
+form {
+    width: fit-content;
+    margin: auto;
+    text-align: center;
+    padding: 20px;
+    border: solid 2px black;
+    background-color: lavender
+}
+
+.form-group {
+    padding: 5px;
+}
+
+label {
+    margin-bottom: 15px;
+}
+
+
+.container {
+    display: grid;
+    width: fit-content;
+    margin: auto;
+    text-align: center;
+
+}
+
+img {
+    max-width:800px;
+    max-height: 800px;
+    margin: 10px;
+}
+
+.labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 80px;
+    border-bottom: solid gray 1px;
+    margin: 10px;
+}
+
+span {
+    font-size: 18px;
+}
+
+.image-container {
+
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}

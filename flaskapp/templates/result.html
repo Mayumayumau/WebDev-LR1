@@ -1,17 +1,38 @@
 {% extends "bootstrap/base.html" %}
 
 {% block title %} Pic Collage {% endblock %}
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
 {% block content %}
 
 <h1>Your collage</h1>
-
-<img src={{ image1 }} width="300"/>
-<img src="./static/hist1.png" width="300" />
-<br>
-<img src={{ image2 }} width="300"/>
-<img src="./static/hist2.png" width="300" />
-<br>
-<img src="./static/collage.jpg" width="300"/>
-<img src="./static/hist3.png" width="300" />
-
+<div class="container">
+    <div class="labels">
+        <span>Image 1 </span>
+        <span>Color chart for image 1</span>
+    </div>
+    <div class="image-container">
+        <img src={{ image1 }}/>
+        <img src="./static/hist1.png"/>
+    </div>
+    <div class="labels">
+        <span>Image 2 </span>
+        <span>Color chart for image 2</span>
+    </div>
+    <div class="image-container">
+        <img src={{ image2 }}/>
+        <img src="./static/hist2.png" />
+    </div>
+    <div class="labels">
+        <span>Collage </span>
+        <span>Color chart for the collage</span>
+    </div>
+    <div class="image-container">
+        <img src="./static/collage.jpg"/>
+        <img src="./static/hist3.png"/>
+    </div>
+</div>
 {% endblock %}
