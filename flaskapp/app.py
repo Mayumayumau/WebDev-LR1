@@ -13,9 +13,8 @@ import random
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-# TODO: make a random key
-
-app.config['SECRET_KEY'] = 'some_key'
+# make a random key
+app.config['SECRET_KEY'] = os.urandom(12).hex()
 
 # CAPTCHA
 app.config['RECAPTCHA_USE_SSL'] = False
@@ -123,4 +122,3 @@ def result():
     return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage)
 
 # TODO: make pretty
-# TODO: heroku
