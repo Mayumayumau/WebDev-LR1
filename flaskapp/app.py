@@ -9,11 +9,20 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+from flask_mail import *
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 # make a random key
 app.config['SECRET_KEY'] = os.urandom(12).hex()
+app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = 'fb45d7521fff8f'
+app.config['MAIL_PASSWORD'] = '47e5511eb1a6cf'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+
+mail = Mail(app)
 
 # Ключи для капчи
 app.config['RECAPTCHA_USE_SSL'] = False
@@ -31,8 +40,9 @@ class CollageForm(FlaskForm):
                                                    FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
     shape = SelectField("Collage shape", choices=[("Vertical", "Vertical"), ("Horizontal", "Horizontal")],
                         validators=[DataRequired()])
-    recaptcha = RecaptchaField()
+    # recaptcha = RecaptchaField()
     submit = SubmitField("Submit", validators=[DataRequired()])
+
 
 # главная страница приложения
 @app.route("/", methods=["GET", "POST"])
@@ -57,7 +67,9 @@ def index():
         email = form.email.data
         form.img1.data.save(filename1)
         form.img2.data.save(filename2)
-        return redirect(url_for("result", image1=filename1, image2=filename2, shape=collage_shape, name=name, email=email))
+
+        return redirect(
+            url_for("result", image1=filename1, image2=filename2, shape=collage_shape, name=name, email=email))
 
     return render_template("index.html", template_form=form)
 
@@ -132,6 +144,13 @@ def result():
     viewer3.plot(rgb_collage[1], color='g')
     viewer3.plot(rgb_collage[2], color='b')
     fig3.savefig('./static/hist3')
-    return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage
-                           , name=request.args.get("name"), email=request.args.get("email"))
 
+    name = request.args.get("name")
+    email = request.args.get("email")
+    msg = Message("your collage", sender="maya@mailtrap.io", recipients=[email])
+    msg.body = f"Hey {name}, your collage is attached."
+    with app.open_resource("./static/collage.jpg") as fp:
+        msg.attach("collage.jpg","image/png", fp.read())
+        mail.send(msg)
+    return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage
+                           , name=name, email=email)
