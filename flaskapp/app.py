@@ -48,15 +48,18 @@ def index():
     filename1 = None
     filename2 = None
     collage_shape = None
+    name = None
     if form.validate_on_submit():
         filename1 = os.path.join('./static', secure_filename(form.img1.data.filename))
         filename2 = os.path.join('./static', secure_filename(form.img2.data.filename))
         collage_shape = form.shape.data
+        name = form.name.data
+        email = form.email.data
         form.img1.data.save(filename1)
         form.img2.data.save(filename2)
-        return redirect(url_for("result", image1=filename1, image2=filename2, shape=collage_shape))
+        return redirect(url_for("result", image1=filename1, image2=filename2, shape=collage_shape, name=name, email=email))
 
-    return render_template("index.html", template_form=form, image1=filename1, image2=filename2)
+    return render_template("index.html", template_form=form)
 
 
 def combine_pics(img1, img2, shape):
@@ -129,5 +132,6 @@ def result():
     viewer3.plot(rgb_collage[1], color='g')
     viewer3.plot(rgb_collage[2], color='b')
     fig3.savefig('./static/hist3')
-    return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage)
+    return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage
+                           , name=request.args.get("name"), email=request.args.get("email"))
 
