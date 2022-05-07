@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm, RecaptchaField
 from werkzeug.utils import secure_filename
-from wtforms import FileField, SubmitField, SelectField, EmailField, StringField
-from wtforms.validators import DataRequired, Email
+from wtforms import FileField, SubmitField, SelectField, EmailField, StringField, IntegerRangeField
+from wtforms.validators import DataRequired, Email, NumberRange
 from flask_wtf.file import FileRequired, FileAllowed
 from flask_bootstrap import Bootstrap
 import os
@@ -40,6 +40,8 @@ class CollageForm(FlaskForm):
                                                    FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
     shape = SelectField("Collage shape", choices=[("Vertical", "Vertical"), ("Horizontal", "Horizontal")],
                         validators=[DataRequired()])
+    border_width = IntegerRangeField("Border width", validators=[NumberRange(min=0, max=50)])
+    divider_width = IntegerRangeField("Divider width", validators=[NumberRange(min=0, max=50)])
     # recaptcha = RecaptchaField()
     submit = SubmitField("Submit", validators=[DataRequired()])
 
