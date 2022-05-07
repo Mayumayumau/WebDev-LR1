@@ -12,8 +12,8 @@ from PIL import Image
 from flask_mail import *
 
 app = Flask(__name__)
+app.debug = True
 bootstrap = Bootstrap(app)
-# make a random key
 app.config['SECRET_KEY'] = os.urandom(12).hex()
 app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
@@ -69,14 +69,17 @@ def index():
         email = form.email.data
         form.img1.data.save(filename1)
         form.img2.data.save(filename2)
+        border_width = form.border_width.data
+        divider_width = form.divider_width.data
 
         return redirect(
-            url_for("result", image1=filename1, image2=filename2, shape=collage_shape, name=name, email=email))
+            url_for("result", image1=filename1, image2=filename2, shape=collage_shape, name=name, email=email,
+                    border_width=border_width, divider_width=divider_width))
 
     return render_template("index.html", form=form)
 
 
-def combine_pics(img1, img2, shape):
+def combine_pics(img1, img2, shape, border_width, divider_width):
     img_combined = None
     # приводим изображения к одинаковой высоте или ширине в зависимости от формы коллажа
     if shape == 'Vertical':
@@ -85,9 +88,11 @@ def combine_pics(img1, img2, shape):
         elif img1.width > img2.width:
             img1.thumbnail((img2.width, img1.height))
         # создаем фон для коллажа и копируем на него оба изображения
-        img_combined = Image.new('RGB', (img1.width, img1.height + img2.height))
-        img_combined.paste(img1, (0, 0))
-        img_combined.paste(img2, (0, img1.height))
+        width = img1.width + 2 * border_width
+        height = img1.height + img2.height + divider_width + border_width * 2
+        img_combined = Image.new('RGB', (width, height), (0, 0, 0))
+        img_combined.paste(img1, (border_width, border_width))
+        img_combined.paste(img2, (border_width, img1.height + border_width + divider_width))
     else:
         if img1.height < img2.height:
             img2.thumbnail((img2.width, img1.height))
@@ -109,7 +114,9 @@ def result():
     image1 = Image.open(image1_path)
     image2 = Image.open(image2_path)
     # комбинируем изображения и сохраняем файл
-    collage = combine_pics(image1, image2, shape)
+    border_width = int(request.args.get('border_width'))
+    divider_width = int(request.args.get('divider_width'))
+    collage = combine_pics(image1, image2, shape, border_width, divider_width)
     collage.save('./static/collage.jpg')
     # трансформируем все три изображения в numpy массивы
     np_image1 = np.array(image1)
