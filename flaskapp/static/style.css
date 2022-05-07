@@ -6,7 +6,7 @@ h1, h2 {
 form {
     width: fit-content;
     margin: auto;
-    text-align: center;
+    text-align: left;
     padding: 20px;
     border: solid 2px black;
     background-color: lavender

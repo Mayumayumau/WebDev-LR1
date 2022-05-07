@@ -11,7 +11,25 @@
 
 <h1>Pic Collage</h1>
 <h2>Create a collage from your favorite pictures</h2>
-{{ wtf.quick_form(template_form, method='post', enctype="multipart/form-data") }}
+
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>{{ form.name.label }}: {{ form.name() }}</p>
+    <p>{{ form.email.label }}: {{ form.email() }}</p>
+    <p>{{ form.img1.label}}: {{ form.img1() }}</p>
+    <p>{{ form.img2.label}}: {{ form.img2() }}</p>
+    <p>{{ form.shape.label}}: {{ form.shape() }}</p>
+    <div>
+        {{ form.border_width.label }}: {{ form.border_width(value="0", oninput="this.nextElementSibling.value = this.value") }}
+        <output>0</output>
+    </div>
+    <div>
+        {{ form.divider_width.label }}: {{ form.divider_width(value="0", oninput="this.nextElementSibling.value = this.value") }}
+        <output>0</output>
+    </div>
+    <div>Captcha here</div>
+    <div>{{ form.submit() }}</div>
+</form>
 
 
 {% endblock %}

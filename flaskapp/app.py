@@ -40,7 +40,7 @@ class CollageForm(FlaskForm):
                                                    FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
     shape = SelectField("Collage shape", choices=[("Vertical", "Vertical"), ("Horizontal", "Horizontal")],
                         validators=[DataRequired()])
-    border_width = IntegerRangeField("Border width", validators=[NumberRange(min=0, max=50)])
+    border_width = IntegerRangeField("Border width", default=0, validators=[NumberRange(min=0, max=50)])
     divider_width = IntegerRangeField("Divider width", validators=[NumberRange(min=0, max=50)])
     # recaptcha = RecaptchaField()
     submit = SubmitField("Submit", validators=[DataRequired()])
@@ -73,7 +73,7 @@ def index():
         return redirect(
             url_for("result", image1=filename1, image2=filename2, shape=collage_shape, name=name, email=email))
 
-    return render_template("index.html", template_form=form)
+    return render_template("index.html", form=form)
 
 
 def combine_pics(img1, img2, shape):
