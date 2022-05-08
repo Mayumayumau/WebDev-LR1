@@ -157,3 +157,7 @@ def result():
 
     return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage_path
                            , name=name, email=email, email_status=email_status)
+
+@app.route("/contact-us", methods=["GET"])
+def contact_us():
+    return render_template("contact-us.html")
