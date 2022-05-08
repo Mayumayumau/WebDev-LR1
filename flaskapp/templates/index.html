@@ -5,7 +5,7 @@
 {% block styles %}
 {{super()}}
 <link rel="stylesheet"
-      href="{{url_for('static', filename='style.css')}}">
+      href="{{url_for('.static', filename='style.css')}}">
 {% endblock %}
 {% block content %}
 
@@ -19,6 +19,7 @@
     <p>{{ form.img1.label}}: {{ form.img1() }}</p>
     <p>{{ form.img2.label}}: {{ form.img2() }}</p>
     <p>{{ form.shape.label}}: {{ form.shape() }}</p>
+    <p>{{ form.border_color.label }}: {{ form.border_color() }}</p>
     <div>
         {{ form.border_width.label }}: {{ form.border_width(value="0", oninput="this.nextElementSibling.value = this.value") }}
         <output>0</output>
@@ -27,7 +28,7 @@
         {{ form.divider_width.label }}: {{ form.divider_width(value="0", oninput="this.nextElementSibling.value = this.value") }}
         <output>0</output>
     </div>
-    <div>Captcha here</div>
+    <div>{{ form.recaptcha() }}</div>
     <div>{{ form.submit() }}</div>
 </form>
 
