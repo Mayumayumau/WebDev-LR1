@@ -1,12 +1,5 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
 
-{% block title %} Pic Collage {% endblock %}
-{% block styles %}
-{{super()}}
-<link rel="stylesheet"
-      href="{{url_for('.static', filename='style.css')}}">
-{% endblock %}
 {% block content %}
 
 <h1>Pic Collage</h1>

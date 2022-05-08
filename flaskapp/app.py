@@ -5,7 +5,6 @@ from wtforms import FileField, SubmitField, SelectField, EmailField, StringField
 from wtforms.widgets import ColorInput
 from wtforms.validators import DataRequired, Email, NumberRange
 from flask_wtf.file import FileRequired, FileAllowed
-from flask_bootstrap import Bootstrap
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +13,6 @@ from flask_mail import *
 
 app = Flask(__name__)
 app.debug = True
-bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = os.urandom(12).hex()
 app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
@@ -131,11 +129,17 @@ def index():
         msg.body = f"Hey {name}, your collage is attached."
         with app.open_resource("./static/collage.jpg") as fp:
             msg.attach("collage.jpg","image/png", fp.read())
-            mail.send(msg)
+            try:
+                email_status = " we sent a copy to your email "
+                mail.send(msg)
+            except:
+                email_status = " we couldn't send a copy to your email "
+
 
 
         return redirect(
-            url_for("result", image1=filename1, image2=filename2, name=name, email=email))
+            url_for("result", image1=filename1, image2=filename2, name=name, email=email, email_status= email_status))
+
 
     return render_template("index.html", form=form)
 
@@ -149,7 +153,7 @@ def result():
 
     name = request.args.get("name")
     email = request.args.get("email")
-
+    email_status = request.args.get("email_status")
 
     return render_template("result.html", image1=image1_path, image2=image2_path, collage=collage_path
-                           , name=name, email=email)
+                           , name=name, email=email, email_status=email_status)

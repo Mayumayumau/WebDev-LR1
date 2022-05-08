@@ -1,15 +1,9 @@
-{% extends "bootstrap/base.html" %}
+{% extends "base.html" %}
 
-{% block title %} Pic Collage {% endblock %}
-{% block styles %}
-{{super()}}
-<link rel="stylesheet"
-      href="{{url_for('static', filename='style.css')}}">
-{% endblock %}
 {% block content %}
 
 <h1>Your collage</h1>
-<h2>{{ name }}, we sent a copy to your email {{ email }}</h2>
+<h2>{{ name }}, {{ email_status }} {{ email }}</h2>
 <div class="container">
     <div class="labels">
         <span>Image 1 </span>
