@@ -8,3 +8,4 @@ Flask-Bootstrap==3.3.7.1
 matplotlib~=3.5.1
 WTForms~=3.0.1
 flask-mail~=0.9.1
+email_validator
