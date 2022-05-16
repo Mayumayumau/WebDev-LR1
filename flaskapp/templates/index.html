@@ -21,7 +21,7 @@
         {{ form.divider_width.label }}: {{ form.divider_width(value="0", oninput="this.nextElementSibling.value = this.value") }}
         <output>0</output>
     </div>
-    <div>{{ form.recaptcha() }}</div>
+    <div class="recaptcha">{{ form.recaptcha() }}</div>
     <div>{{ form.submit() }}</div>
 </form>
 
